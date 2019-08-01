@@ -1,0 +1,36 @@
+/* row */
+.budget-table-row[data-toolkit-negative-available]
+  .budget-table-cell-available
+  .ynab-new-budget-available-number {
+  background: var(--tk-ynab-budget-balance-negative-background) !important;
+  color: var(--tk-ynab-budget-balance-negative-text) !important;
+}
+.budget-table-row[data-toolkit-negative-available]
+  .budget-table-cell-available
+  .ynab-new-budget-available-number:hover {
+  background: #b43326 !important;
+}
+
+/* pacing column */
+li.budget-table-cell-pacing span.cautious {
+  background: var(--tk-ynab-budget-balance-negative-background) !important;
+  color: var(--tk-ynab-budget-balance-negative-text) !important;
+}
+li.budget-table-cell-pacing .budget-table-cell-pacing-display.cautious:hover {
+  background: #b43326 !important;
+}
+li.budget-table-cell-pacing span.deemphasized.cautious,
+li.budget-table-cell-pacing span.deemphasized.cautious:hover {
+  background: none !important;
+}
+
+/* inspector */
+.budget-inspector[data-toolkit-negative-available] .budget-inspector-category-overview dt.cautious {
+  color: var(--tk-ynab-budget-balance-negative-text);
+}
+.budget-inspector[data-toolkit-negative-available]
+  .budget-inspector-category-overview
+  dd
+  .cautious {
+  background: var(--tk-ynab-budget-balance-negative-background);
+}
