@@ -1,3 +1,9 @@
+The concept behind FI is very similar to Days of Buffering, with a couple key differences:
+1) The annual spending is not more than a certain percentage of the sum of all monetary assets. This is generally 4%.
+2) The DoB of FI is effectively "Until you die."
+
+Basically, one could stop working forever if they reach their FI number.
+
 The goals of this feature (in no particular order):
 
 - Provide a new left tab for FI exploration. Page one will show all the numbers available to display and graphs of these numbers over time on a monthly basis.
