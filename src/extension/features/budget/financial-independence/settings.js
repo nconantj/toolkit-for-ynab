@@ -4,7 +4,7 @@ module.exports = [
     type: 'checkbox',
     default: false,
     section: 'budget',
-    title: 'Financial Independence Metric'
+    title: 'Financial Independence Metric',
     description:
       "This calculation shows how much money you need to be financially independent. It can display this as the number you need or how close you are to that number."
   },
@@ -13,7 +13,7 @@ module.exports = [
     type: 'select',
     default: 0,
     title: 'Financial Independence History Lookup',
-    description: 'How old transactions should be used for this calculation.'
+    description: 'How old transactions should be used for this calculation.',
     options: [
       { name: 'All', value: '0' },
       { name: '1 year', value: '12' },
@@ -27,7 +27,7 @@ module.exports = [
     type: 'select',
     default: 3,
     title: 'Financial Independence Annual Withdrawal Rate',
-    description: "How much you want to withdraw annually.'
+    description: 'How much you want to withdraw annually.',
     options: [
       { name: '1%', value: '1' },
       { name: '2%', value: '2' },
@@ -46,7 +46,7 @@ module.exports = [
     type: 'select',
     default: 4,
     title: 'Financial Independence Milestone',
-    description: 'What milestone you are targeting from fi180.com/2017/06/26/the-milestones-of-fi/'
+    description: 'What milestone you are targeting from fi180.com/2017/06/26/the-milestones-of-fi/',
     options: [
       { name: 'FU$ (10%)', value: '10' },
       { name: 'Lean FI (30%)', value: '30' },
@@ -57,15 +57,15 @@ module.exports = [
       { name: '1.5 FI (150%)', value: '150' },
     ],
   },
-//  {
-//    name: 'FinancialIndependenceDisplayValue'
-//    type: 'select',
-//    default: 1,
-//	description: 'What number to display.',
-//    title: 'Financial Independence Display Value',
-//    options: [
-//      { name: 'FI Number', value: '0' },
-//      { name: 'FI Percent', value: '1' },
-//    ],
-//  },
+  {
+    name: 'FinancialIndependenceDisplayValue'
+    type: 'select',
+    default: 1,
+	description: 'What number to display.',
+    title: 'Financial Independence Display Value',
+    options: [
+      { name: 'FI Number', value: '0' },
+      { name: 'FI Progress', value: '1' },
+    ],
+  },
 ]
