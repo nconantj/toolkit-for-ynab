@@ -3,7 +3,7 @@ import { getEntityManager } from 'toolkit/extension/utils/ynab';
 import { Feature } from 'toolkit/extension/features/feature';
 import { isCurrentRouteBudgetPage } from 'toolkit/extension/utils/ynab';
 import { formatCurrency } from 'toolkit/extension/utils/currency';
-//import { Collections } from 'toolkit/extension/utils/collections';
+// import { Collections } from 'toolkit/extension/utils/collections';
 
 export class FinancialIndependence extends Feature {
   _lookbackMonths = parseInt(ynabToolKit.options.FinancialIndependenceHistoryLookup);
@@ -46,7 +46,7 @@ export class FinancialIndependence extends Feature {
     const calculation = this._calculateFINumber(eligibleTransactions);
     this.updateDisplay(calculation, balance);
   }
-  
+
   onRouteChanged() {
     if (this.shouldInvoke()) {
       this.invoke();
@@ -58,21 +58,27 @@ export class FinancialIndependence extends Feature {
     const fiContainer = document.querySelector('.toolkit-financial-independence');
 
     let $displayElement = $(fiContainer);
-    if( !fiContainer ) {
+    if(!fiContainer) {
       $displayElement = $('<div>', {
         class: 'budget-header-item budget-header-days toolkit-financial-independence',
       })
         .append(
           $('<div>', {
             class: 'budget-header-days-age',
-            title: l10n('budget.fi.tooltip', 'Want to know how close you are to financial independence? Check this out.'),
+            title: l10n(
+              'budget.fi.tooltip',
+              'Want to know how close you are to financial independence? Check this out.'
+            ),
           })
         )
         .append(
           $('<div>', {
             class: 'budget-header-days-label',
             text: l10n('budget.fi.title', 'Financial Independence'),
-            title: l10n('budget.fi.tooltip', 'Want to know how close you are to financial independence? Check this out.'),
+            title: l10n(
+              'budget.fi.tooltip',
+              'Want to know how close you are to financial independence? Check this out.'
+            ),
           })
         );
       $('.budget-header-flexbox').append($displayElement);
@@ -88,9 +94,10 @@ export class FinancialIndependence extends Feature {
         )
       );
     } else {
-      const progress = math.floor((balance / financialIndependence) * 100);
+      const progress = Math.floor((balance / financialIndependence) * 100);
+      const milestone = _getMilestone(progress);
       if (this._display === 0) {
-      // const {units, displayNum} = _getUnits(financialIndependence);
+        // const {units, displayNum} = _getUnits(financialIndependence);
         $('.budget-header-days-age', $displayElement).text(`${financialIndependence}`);
       } else {
         $('.budget-header-days-age', $displayElement).text(`${progress}%`);
@@ -100,7 +107,7 @@ export class FinancialIndependence extends Feature {
         `${l10n('budget.fi.fiNumber', 'FI Number')}: ${formatCurrency(financialIndependence)}
 ${l10n('budget.fi.workingAssets', 'Working Assets')}: ${formatCurrency(balance)}
 ${l10n('budget.fi.progress', 'Progress')}: ${progress}%
-${l10n('budget.fi.fiMileston', 'Milestone')}: ${_getMilestone(progress)}
+${l10n('budget.fi.fiMileston', 'Milestone')}: ${milestone}
 ${l10n('budget.fi.days', 'Total days of budgeting')}: ${totalDays}
 ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(averageAnnualOutflow)}`
       );
@@ -127,26 +134,10 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     return l10n('budget.fi.milestoneSuperFI', '1.5 FI or better');
   }
 
-/*
-  _getUnits(fiNo) {
-    if (fiNo > 1000000) {
-      return (
-        l10n('budget.fi.million', 'million'),
-        math.floor(fiNo / 100000) / 10,
-      );
-    } else {
-      return (
-        '',
-        fiNo,
-      )
-    }
-  }
-*/
-  
   _calculateFINumber = transactions => {
     const { dates, totalOutflow, uniqueDates } = transactions.reduce(
       (reduced, current) => {
-        const {amount, date} = current.getProperties('amount', 'date');
+        const {amount, date} = current.getProperties( 'amount', 'date' );
         reduced.dates.push(date.toUTCMoment());
         reduced.uniqueDates.set(date.format());
         reduced.totalOutflow += amount;
