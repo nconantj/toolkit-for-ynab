@@ -205,7 +205,7 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
       isEligibleType &&
       !account.get('closed') &&
       !account.get('deleted') &&
-      account.get('balance') > 0;
+      account.get('balance') > 0
     );
   };
   _eligibleTransactionFilter = transaction => {
