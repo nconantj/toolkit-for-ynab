@@ -12,6 +12,7 @@ module.exports = [
     name: 'FinancialIndependenceHistoryLookup',
     type: 'select',
     default: 0,
+    section: 'budget',
     title: 'Financial Independence History Lookup',
     description: 'How old transactions should be used for this calculation.',
     options: [
@@ -26,6 +27,7 @@ module.exports = [
     name: 'FinancialIndependenceWithdrawalRate',
     type: 'select',
     default: 3,
+    section: 'budget',
     title: 'Financial Independence Annual Withdrawal Rate',
     description: 'How much you want to withdraw annually.',
     options: [
@@ -45,6 +47,7 @@ module.exports = [
     name: 'FinancialIndependenceMilestone',
     type: 'select',
     default: 4,
+    section: 'budget',
     title: 'Financial Independence Milestone',
     description: 'What milestone you are targeting from fi180.com/2017/06/26/the-milestones-of-fi/',
     options: [
@@ -61,6 +64,7 @@ module.exports = [
     name: 'FinancialIndependenceDisplayValue',
     type: 'select',
     default: 1,
+    section: 'budget',
 	description: 'What number to display.',
     title: 'Financial Independence Display Value',
     options: [
