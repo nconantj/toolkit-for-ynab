@@ -89,7 +89,7 @@ export class FinancialIndependence extends Feature {
       );
     } else {
       const progress = math.floor ( ( balance / financialIndependence ) * 100 );
-      if (._display === 0) {
+      if (this._display === 0) {
 //        const {units, displayNum} = _getUnits(financialIndependence);
         $('.budget-header-days-age', $displayElement).text('${financialIndependence}');
       } else {
