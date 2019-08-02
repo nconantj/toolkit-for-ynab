@@ -185,7 +185,7 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     let isEligibleType = false;
 
     console.log(account.get('type'));
-    
+
     switch (account.get('type')) {
       case 'checking':
       case 'savings':
@@ -198,7 +198,7 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     }
 
     console.log(isEligibleType);
-    
+
     return true;
   };
   _eligibleTransactionFilter = transaction => {
