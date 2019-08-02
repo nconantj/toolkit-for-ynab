@@ -57,15 +57,15 @@ module.exports = [
       { name: '1.5 FI (150%)', value: '150' },
     ],
   },
-  {
-    name: 'FinancialIndependenceDisplayValue'
-    type: 'select',
-    default: 1,
-	description: 'What number to display.',
-    title: 'Financial Independence Display Value',
-    options: [
-      { name: 'FI Number', value: '0' },
-      { name: 'FI Percent', value: '1' },
-    ],
-  },
+//  {
+//    name: 'FinancialIndependenceDisplayValue'
+//    type: 'select',
+//    default: 1,
+//	description: 'What number to display.',
+//    title: 'Financial Independence Display Value',
+//    options: [
+//      { name: 'FI Number', value: '0' },
+//      { name: 'FI Percent', value: '1' },
+//    ],
+//  },
 ]

@@ -12,7 +12,7 @@ export class FinancialIndependence extends Feature {
   
   _withdrawalRate = parseInt(ynabToolKit.options.FinancialIndependenceWithdrawalRate) / 100;
   _milestone = parseInt(ynabToolKit.options.FinancialIndependenceMilestone) / 10;
-  _display = parseInt(ynabToolKit.options.FinancialIndependenceDisplayValue);
+  //_display = parseInt(ynabToolKit.options.FinancialIndependenceDisplayValue);
 
   injectCSS() {
     return require('./index.css');
@@ -53,7 +53,92 @@ export class FinancialIndependence extends Feature {
     }
   }
   
-  _updateDisplay(calculation) {}
+  _updateDisplay(calculation, balance) {
+    const { averageDailyOutflow, averageAnnualOutflow, financialIndependence, totalDays, totalOutflow } = calculation;
+    const fiContainer = document.querySelector('.toolkit-financial-independence');
+    
+    let $displayElement = $(fiContainer);
+    if(!fiContainer) {
+      $displayElement = $('<div>', {
+        class: 'budget-header-item budget-header-days toolkit-financial-independence',
+      })
+        .append(
+          $('<div>', {
+            class: 'budget-header-days-age',
+            title: l10n('budget.fi.tooltip', "Want to know how close you are to financial independence? Check this out."),
+          })
+        )
+        .append(
+          $('<div>', {
+            class: 'budget-header-days-label',
+            text: l10n('budget.fi.title', 'Financial Independence'),
+            title: l10n('budget.fi.tooltip', "Want to know how close you are to financial independence? Check this out."),
+          })
+        );
+      $('.budget-header-flexbox').append($displayElement);
+    }
+    
+    if (calculation.notEnoughDates) {
+      $('.budget-header-days-age', $displayElement).text('???');
+      $('.budget-header-days-age', $displayElement).attr(
+        'title',
+        l10n(
+          'budget.fi.noHistory',
+          'Your budget history is less than 30 days. Go on with YNAB a while.'
+        )
+      );
+    } else {
+      const progress = math.floor ( ( balance / financialIndependence ) * 100 );
+      if (._display === 0) {
+//        const {units, displayNum} = _getUnits(financialIndependence);
+        $('.budget-header-days-age', $displayElement).text('${financialIndependence}');
+      } else {
+        $('.budget-header-days-age', $displayElement).text(`${progress}%`);
+      }
+      $('.budget-header-days-age', $displayElement).attr(
+        'title',
+        `${l10n('budget.fi.fiNumber', 'FI Number')}: ${formatCurrency(financialIndependence)}
+${l10n('budget.fi.workingAssets', 'Working Assets')}: ${formatCurrency(balance)}
+${l10n('budget.fi.progress', 'Progress')}: ${progress}%
+${l10n('budget.fi.fiMileston', 'Milestone')}: ${_getMilestone(progress)}
+${l10n('budget.fi.days', 'Total days of budgeting')}: ${totalDays}
+${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(averageAnnualOutflow)}`
+      );
+    }
+  }
+  
+  _getMilestone(progress) {
+    if (progress < 0.10) {
+      return l10n('budget.fi.milestoneNone', 'None');
+    } else if (progress < 0.30) {
+      return l10n('budget.fi.milestoneFU', 'FU$');
+    } else if (progress < 0.50) {
+      return l10n('budget.fi.milestoneLeanFI', 'Lean FI');
+    } else if (progress < 0.80) {
+      return l10n('budget.fi.milestoneHalfFI', 'Half FI');
+    } else if (progress < 1.00) {
+      return l10n('budget.fi.milestoneFlexFI', 'Flex FI');
+    } else if (progress < 1.20) {
+      return l10n('budget.fi.milestoneFI', 'FI');
+    } else if (progress < 1.50) {
+      return l10n('budget.fi.milestoneFatFI', 'Fat FI');
+    } else {
+      return l10n('budget.fi.milestoneSuperFI', '1.5 FI or better');
+    }
+  }
+//  _getUnits(fiNo) {
+//    if (fiNo > 1000000) {
+//      return (
+//        l10n('budget.fi.million', 'million'),
+//        math.floor(fiNo / 100000) / 10,
+//      );
+//    } else {
+//      return (
+//        '',
+//        fiNo,
+//      )
+//    }
+//  }
   
   _calculateFINumber = (transactions) => {
     const { dates, totalOutflow, uniqueDates } = transaction.reduce(
@@ -85,7 +170,7 @@ export class FinancialIndependence extends Feature {
     averageAnnualOutflow = averageMonthlyOutflow * 12; // To be changed to daily * 365.25
     
     let financialIndependence = (averageAnnualOutflow / _withdrawalRate) * _milestone;
-    financialIndependence = Math.floor(financialIndependence);
+    financialIndependence = Math.floor(financialIndependence * 100) / 100;
     
     const notEnoughDates = uniqueDates.size < 30;
     if (notEnoughDates) {
