@@ -58,7 +58,7 @@ module.exports = [
     ],
   },
   {
-    name: 'FinancialIndependenceDisplayValue'
+    name: 'FinancialIndependenceDisplayValue',
     type: 'select',
     default: 1,
 	description: 'What number to display.',
