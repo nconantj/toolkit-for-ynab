@@ -6,7 +6,7 @@ module.exports = [
     section: 'budget',
     title: 'Financial Independence Metric',
     description:
-      "This calculation shows how much money you need to be financially independent. It can display this as the number you need or how close you are to that number."
+      'This calculation shows how much money you need to be financially independent. It can display this as the number you need or how close you are to that number.'
   },
   {
     name: 'FinancialIndependenceHistoryLookup',
@@ -72,4 +72,4 @@ module.exports = [
       { name: 'FI Progress', value: '1' },
     ],
   },
-]
+];
