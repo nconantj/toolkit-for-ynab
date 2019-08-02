@@ -44,7 +44,7 @@ export class FinancialIndependence extends Feature {
     }
 
     const calculation = this._calculateFINumber(eligibleTransactions);
-    this.updateDisplay(calculation, balance);
+    this._updateDisplay(calculation, balance);
   }
 
   onRouteChanged() {
@@ -95,7 +95,7 @@ export class FinancialIndependence extends Feature {
       );
     } else {
       const progress = Math.floor((balance / financialIndependence) * 100);
-      const milestone = this.getMilestone(progress);
+      const milestone = this._getMilestone(progress);
       if (this._display === 0) {
         // const {units, displayNum} = _getUnits(financialIndependence);
         $('.budget-header-days-age', $displayElement).text(`${financialIndependence}`);
