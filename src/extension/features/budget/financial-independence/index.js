@@ -197,13 +197,9 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
         break;
     }
 
-    return (
-      true
-      // isEligibleType &&
-      // !account.get('closed') &&
-      // !account.get('deleted') &&
-      // account.get('balance') > 0
-    );
+    console.log(isEligibleType);
+    
+    return true;
   };
   _eligibleTransactionFilter = transaction => {
     const today = new ynab.utilities.DateWithoutTime();
