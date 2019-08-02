@@ -58,7 +58,7 @@ export class FinancialIndependence extends Feature {
     const fiContainer = document.querySelector('.toolkit-financial-independence');
 
     let $displayElement = $(fiContainer);
-    if(!fiContainer) {
+    if (!fiContainer) {
       $displayElement = $('<div>', {
         class: 'budget-header-item budget-header-days toolkit-financial-independence',
       })
@@ -114,7 +114,7 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     }
   }
 
-  _getMilestone(progress) {
+  _getMilestone = progress => {
     if (progress < 0.1) {
       return l10n('budget.fi.milestoneNone', 'None');
     } else if (progress < 0.3) {
@@ -130,14 +130,14 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     } else if (progress < 1.5) {
       return l10n('budget.fi.milestoneFatFI', 'Fat FI');
     }
-    
+
     return l10n('budget.fi.milestoneSuperFI', '1.5 FI or better');
   }
 
   _calculateFINumber = transactions => {
     const { dates, totalOutflow, uniqueDates } = transactions.reduce(
       (reduced, current) => {
-        const {amount, date} = current.getProperties( 'amount', 'date' );
+        const { amount, date } = current.getProperties('amount', 'date');
         reduced.dates.push(date.toUTCMoment());
         reduced.uniqueDates.set(date.format());
         reduced.totalOutflow += amount;
@@ -184,7 +184,7 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
   _accountFilter = account => {
     let isEligibleType = false;
 
-    switch(account.get('type')) {
+    switch (account.get('type')) {
       case 'checking':
       case 'savings':
       case 'asset':

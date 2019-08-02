@@ -68,8 +68,7 @@ module.exports = [
     description: 'What number to display.',
     title: 'Financial Independence Display Value',
     options: [
-      { name: 'FI·Number', value: '0' },
-      { name: 'FI·Progress', value: '1' }
+      { name: 'FI Number', value: '0' }, { name: 'FI Progress', value: '1' }
     ],
   },
 ];
