@@ -3,7 +3,7 @@ import { getEntityManager } from 'toolkit/extension/utils/ynab';
 import { Feature } from 'toolkit/extension/features/feature';
 import { isCurrentRouteBudgetPage } from 'toolkit/extension/utils/ynab';
 import { formatCurrency } from 'toolkit/extension/utils/currency';
-// import { Collections } from 'toolkit/extension/utils/collections';
+import { Collections } from 'toolkit/extension/utils/collections';
 
 export class FinancialIndependence extends Feature {
   _lookbackMonths = parseInt(ynabToolKit.options.FinancialIndependenceHistoryLookup);
@@ -11,11 +11,11 @@ export class FinancialIndependence extends Feature {
   _lookbackDays = this._lookbackMonths * 30;
 
   _withdrawalRate = parseInt(ynabToolKit.options.FinancialIndependenceWithdrawalRate) / 100;
-  _milestone = parseInt(ynabToolKit.options.FinancialIndependenceMilestone) / 10;
-  // _display = parseInt(ynabToolKit.options.FinancialIndependenceDisplayValue);
+  _milestone = parseInt(ynabToolKit.options.FinancialIndependenceMilestone) / 100;
+  _display = parseInt(ynabToolKit.options.FinancialIndependenceDisplayValue);
 
   _keysPrinted = false;
-  
+
   injectCSS() {
     return require('./index.css');
   }
@@ -29,16 +29,24 @@ export class FinancialIndependence extends Feature {
       .getAllTransactions()
       .filter(this._eligibleTransactionFilter);
 
-    const accounts = getEntityManager()
-      .getAllAccounts()
-      .filter(this._accountFilter);
+    const accounts = Collections.accountsCollection;
 
     let balance = 0;
     if (accounts) {
       balance = accounts.reduce((reduced, current) => {
+        // console.log(current.getNote());
+        // getNote will eventually be needed.
         const calculation = current.getAccountCalculation();
-        if (calculation && !calculation.getAccountIsTombstone()) {
-          reduced += calculation.getBalance();
+        const acctType = current.getAccountType();
+        if (
+          calculation &&
+          !calculation.getAccountIsTombstone() &&
+          (acctType === 'OtherAsset' || acctType === 'Savings' || acctType === 'Checking')
+        ) {
+          let calcBalance = calculation.getBalance();
+          if (calcBalance > 0) {
+            reduced += calcBalance;
+          }
         }
 
         return reduced;
@@ -96,40 +104,47 @@ export class FinancialIndependence extends Feature {
         )
       );
     } else {
-      const progress = Math.floor((balance / financialIndependence) * 100);
-      const milestone = this._getMilestone(progress);
+      const milestoneFI = financialIndependence * this._milestone;
+      const progressMilestone = Math.floor((balance / milestoneFI) * 10000) / 100;
+      const progressTotal = Math.floor((balance / financialIndependence) * 10000) / 100;
+      const milestone = this._getMilestone(progressTotal);
+      const targetMilestone = this._getMilestone(this._milestone * 100);
+
       if (this._display === 0) {
         // const {units, displayNum} = _getUnits(financialIndependence);
-        $('.budget-header-days-age', $displayElement).text(`${financialIndependence}`);
+        $('.budget-header-days-age', $displayElement).text(`${formatCurrency(milestoneFI)}`);
       } else {
-        $('.budget-header-days-age', $displayElement).text(`${progress}%`);
+        $('.budget-header-days-age', $displayElement).text(`${progressMilestone}%`);
       }
       $('.budget-header-days-age', $displayElement).attr(
         'title',
-        `${l10n('budget.fi.fiNumber', 'FI Number')}: ${formatCurrency(financialIndependence)}
-${l10n('budget.fi.workingAssets', 'Working Assets')}: ${formatCurrency(balance)}
-${l10n('budget.fi.progress', 'Progress')}: ${progress}%
-${l10n('budget.fi.fiMileston', 'Milestone')}: ${milestone}
+        `${l10n('budget.fi.fiNumber', 'FI Number (Base)')}: ${formatCurrency(financialIndependence)}
+${l10n('budget.fi.progress', 'Progress (Base)')}: ${progressTotal}%
+${l10n('budget.fi.milestoneCurrent', 'Milestone Achieved')}: ${milestone}
+${l10n('budget.fi.fiNumberTarget', 'FI Number (Target)')}: ${formatCurrency(milestoneFI)}
+${l10n('budget.fi.progressMilestone', 'Progress (Target)')}: ${progressMilestone}%
+${l10n('budget.fi.milestoneTarget', 'Target Milestone')}: ${targetMilestone}
 ${l10n('budget.fi.days', 'Total days of budgeting')}: ${totalDays}
+${l10n('budget.fi.workingAssets', 'Working Assets')}: ${formatCurrency(balance)}
 ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(averageAnnualOutflow)}`
       );
     }
   }
 
   _getMilestone = progress => {
-    if (progress < 0.1) {
+    if (progress < 10) {
       return l10n('budget.fi.milestoneNone', 'None');
-    } else if (progress < 0.3) {
+    } else if (progress < 30) {
       return l10n('budget.fi.milestoneFU', 'FU$');
-    } else if (progress < 0.5) {
+    } else if (progress < 50) {
       return l10n('budget.fi.milestoneLeanFI', 'Lean FI');
-    } else if (progress < 0.8) {
+    } else if (progress < 80) {
       return l10n('budget.fi.milestoneHalfFI', 'Half FI');
-    } else if (progress < 1) {
+    } else if (progress < 100) {
       return l10n('budget.fi.milestoneFlexFI', 'Flex FI');
-    } else if (progress < 1.2) {
+    } else if (progress < 120) {
       return l10n('budget.fi.milestoneFI', 'FI');
-    } else if (progress < 1.5) {
+    } else if (progress < 150) {
       return l10n('budget.fi.milestoneFatFI', 'Fat FI');
     }
 
@@ -165,8 +180,7 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     averageMonthlyOutflow = averageDailyOutflow * 30; // To be removed.
     averageAnnualOutflow = averageMonthlyOutflow * 12; // To be changed to daily * 365.25
 
-    let financialIndependence = (averageAnnualOutflow / this._withdrawalRate) * this._milestone;
-    financialIndependence = Math.floor(financialIndependence * 100) / 100;
+    let financialIndependence = averageAnnualOutflow / this._withdrawalRate;
 
     const notEnoughDates = uniqueDates.size < 30;
     if (notEnoughDates) {
@@ -183,31 +197,6 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     };
   };
 
-  _accountFilter = account => {
-    let isEligibleType = false;
-
-    if (!this._keysPrinted) {
-      console.log(account.keys());
-      this._keysPrinted = true;
-    }
-    
-    // console.log(account.get('type'));
-
-    // switch (account.get('type')) {
-    // case 'checking':
-    // case 'savings':
-    // case 'asset':
-    // isEligibleType = true;
-    // break;
-    // default:
-    // isEligibleType = false;
-    // break;
-    // }
-
-    // console.log(isEligibleType);
-
-    return true;
-  };
   _eligibleTransactionFilter = transaction => {
     const today = new ynab.utilities.DateWithoutTime();
 
