@@ -14,6 +14,8 @@ export class FinancialIndependence extends Feature {
   _milestone = parseInt(ynabToolKit.options.FinancialIndependenceMilestone) / 10;
   // _display = parseInt(ynabToolKit.options.FinancialIndependenceDisplayValue);
 
+  _keysPrinted = false;
+  
   injectCSS() {
     return require('./index.css');
   }
@@ -184,20 +186,25 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
   _accountFilter = account => {
     let isEligibleType = false;
 
-    console.log(account.get('type'));
-
-    switch (account.get('type')) {
-      case 'checking':
-      case 'savings':
-      case 'asset':
-        isEligibleType = true;
-        break;
-      default:
-        isEligibleType = false;
-        break;
+    if (!this._keysPrinted) {
+      console.log(account.keys());
+      this._keysPrinted = true;
     }
+    
+    // console.log(account.get('type'));
 
-    console.log(isEligibleType);
+    // switch (account.get('type')) {
+    // case 'checking':
+    // case 'savings':
+    // case 'asset':
+    // isEligibleType = true;
+    // break;
+    // default:
+    // isEligibleType = false;
+    // break;
+    // }
+
+    // console.log(isEligibleType);
 
     return true;
   };
