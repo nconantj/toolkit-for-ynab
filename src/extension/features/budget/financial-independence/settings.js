@@ -65,7 +65,7 @@ module.exports = [
     type: 'select',
     default: 1,
     section: 'budget',
-	description: 'What number to display.',
+    description: 'What number to display.',
     title: 'Financial Independence Display Value',
     options: [
       { name: 'FI Number', value: '0' },
