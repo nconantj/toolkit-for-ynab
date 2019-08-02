@@ -132,7 +132,7 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
     }
 
     return l10n('budget.fi.milestoneSuperFI', '1.5 FI or better');
-  }
+  };
 
   _calculateFINumber = transactions => {
     const { dates, totalOutflow, uniqueDates } = transactions.reduce(
@@ -189,10 +189,10 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(ave
       case 'savings':
       case 'asset':
         isEligibleType = true;
-      break;
+        break;
       default:
         isEligibleType = false;
-      break;
+        break;
     }
 
     return (
