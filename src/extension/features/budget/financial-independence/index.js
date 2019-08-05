@@ -16,7 +16,11 @@ export class FinancialIndependence extends Feature {
 
   _abbreviation = parseInt(ynabToolKit.options.FinancialIndependenceAbbreviation);
 
+  _growthRate = parseInt(ynabToolKit.options.FinancialIndependenceGrowthRate) / 100;
+
   _keysPrinted = false;
+
+  _timeFormat = parseInt(ynabToolKit.options.FinancialIndependenceTimeDisplay);
 
   injectCSS() {
     return require('./index.css');
@@ -36,14 +40,14 @@ export class FinancialIndependence extends Feature {
     let balance = 0;
     if (accounts) {
       balance = accounts.reduce((reduced, current) => {
-        // console.log(current.getNote());
-        // getNote will eventually be needed.
+        const note = current.getNote();
         const calculation = current.getAccountCalculation();
         const acctType = current.getAccountType();
         if (
           calculation &&
           !calculation.getAccountIsTombstone() &&
-          (acctType === 'OtherAsset' || acctType === 'Savings' || acctType === 'Checking')
+          (acctType === 'OtherAsset' || acctType === 'Savings' || acctType === 'Checking') &&
+          (note == null || note.indexOf(':fiexcluded:') === -1)
         ) {
           let calcBalance = calculation.getBalance();
           if (calcBalance > 0) {
@@ -113,22 +117,44 @@ export class FinancialIndependence extends Feature {
       const targetMilestone = this._getMilestone(this._milestone * 100);
       const milestoneFIOut = this._formatCurrency(milestoneFI);
       const financialIndependenceOut = this._formatCurrency(financialIndependence);
+      const fiTimeTotal = this._getFIPeriod(balance, financialIndependence);
+      const fiTimeTarget = this._getFIPeriod(balance, milestoneFI);
 
-      if (this._display === 0) {
-        // const {units, displayNum} = _getUnits(financialIndependence);
-        $('.budget-header-days-age', $displayElement).text(`${milestoneFIOut}`);
-      } else if (this._display === 1) {
-        $('.budget-header-days-age', $displayElement).text(`${progressMilestone}%`);
-      } else {
-        $('.budget-header-days-age', $displayElement).text(`${milestone}`);
+      switch (this._display) {
+        case 1:
+          $('.budget-header-days-age', $displayElement).text(`${progressMilestone}%`);
+          break;
+        case 2:
+          $('.budget-header-days-age', $displayElement).text(`${milestone}`);
+          break;
+        case 3:
+          $('.budget-header-days-age', $displayElement).text(`${fiTimeTarget}`);
+          break;
+        case 0:
+        default:
+          $('.budget-header-days-age', $displayElement).text(`${milestoneFIOut}`);
+          break;
       }
+
+      let timeToBase =
+        this._timeFormat === 0
+          ? l10n('budget.fi.timeToBase', 'Time to FI (Base)')
+          : l10n('budget.fi.dateOfBase', 'Date of FI (Base)');
+
+      let timeToTarget =
+        this._timeFormat === 0
+          ? l10n('budget.fi.timeToMilestone', 'Time to Milestone (Target)')
+          : l10n('budget.fi.dateOfMilestone', 'Date of Milestone (Target)');
+
       $('.budget-header-days-age', $displayElement).attr(
         'title',
         `${l10n('budget.fi.fiNumber', 'FI Number (Base)')}: ${financialIndependenceOut}
 ${l10n('budget.fi.progress', 'Progress (Base)')}: ${progressTotal}%
+${timeToBase}: ${fiTimeTotal}
 ${l10n('budget.fi.milestoneCurrent', 'Milestone Achieved')}: ${milestone}
 ${l10n('budget.fi.fiNumberTarget', 'FI Number (Target)')}: ${milestoneFIOut}
 ${l10n('budget.fi.progressMilestone', 'Progress (Target)')}: ${progressMilestone}%
+${timeToTarget}: ${fiTimeTarget}
 ${l10n('budget.fi.milestoneTarget', 'Target Milestone')}: ${targetMilestone}
 ${l10n('budget.fi.days', 'Total days of budgeting')}: ${totalDays}
 ${l10n('budget.fi.workingAssets', 'Working Assets')}: ${this._formatCurrency(balance)}
@@ -136,6 +162,67 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
           averageAnnualOutflow
         )}`
       );
+    }
+  }
+
+  _getFIPeriod(assets, fiNumber) {
+    if (assets >= fiNumber) {
+      return 'At or above goal.';
+    }
+
+    let fiPeriodRaw = Math.log(fiNumber / assets) / (12 * Math.log(1 + this._growthRate / 12));
+
+    let months = Math.ceil(fiPeriodRaw);
+
+    if (this._timeDisplay === 0) {
+      let years = Math.floor(months / 12);
+      months -= years * 12;
+
+      if (years === 0 && months === 0) {
+        return 'At or above goal.';
+      } else if (years === 0) {
+        return `${months} month(s)`;
+      } else if (months === 0) {
+        return `${years} year(s)`;
+      }
+
+      return `${years} years and ${months} months`;
+    }
+
+    // else
+    let date = new Date();
+    date.setDate(1);
+    date.setMonth(date.getMonth() + months);
+
+    return `${this._getMonthName(date)} ${date.getFullYear()}`;
+  }
+
+  _getMonthName(date) {
+    switch (date.getMonth()) {
+      case 1:
+        return l10n('buget.fi.january', 'Jan');
+      case 2:
+        return l10n('buget.fi.january', 'Feb');
+      case 3:
+        return l10n('buget.fi.january', 'Mar');
+      case 4:
+        return l10n('buget.fi.january', 'Apr');
+      case 5:
+        return l10n('buget.fi.january', 'May');
+      case 6:
+        return l10n('buget.fi.january', 'Jun');
+      case 7:
+        return l10n('buget.fi.january', 'Jul');
+      case 8:
+        return l10n('buget.fi.january', 'Aug');
+      case 9:
+        return l10n('buget.fi.january', 'Sep');
+      case 10:
+        return l10n('buget.fi.january', 'Oct');
+      case 11:
+        return l10n('buget.fi.january', 'Nov');
+      case 12:
+        return l10n('buget.fi.january', 'Dec');
     }
   }
 
