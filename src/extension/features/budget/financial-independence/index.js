@@ -14,6 +14,8 @@ export class FinancialIndependence extends Feature {
   _milestone = parseInt(ynabToolKit.options.FinancialIndependenceMilestone) / 100;
   _display = parseInt(ynabToolKit.options.FinancialIndependenceDisplayValue);
 
+  _abbreviation = parseInt(ynabToolKit.options.FinancialIndependenceAbbreviation);
+
   _keysPrinted = false;
 
   injectCSS() {
@@ -109,25 +111,92 @@ export class FinancialIndependence extends Feature {
       const progressTotal = Math.floor((balance / financialIndependence) * 10000) / 100;
       const milestone = this._getMilestone(progressTotal);
       const targetMilestone = this._getMilestone(this._milestone * 100);
+      const milestoneFIOut = this._formatCurrency(milestoneFI);
+      const financialIndependenceOut = this._formatCurrency(financialIndependence);
 
       if (this._display === 0) {
         // const {units, displayNum} = _getUnits(financialIndependence);
-        $('.budget-header-days-age', $displayElement).text(`${formatCurrency(milestoneFI)}`);
-      } else {
+        $('.budget-header-days-age', $displayElement).text(`${milestoneFIOut}`);
+      } else if (this._display === 1) {
         $('.budget-header-days-age', $displayElement).text(`${progressMilestone}%`);
+      } else {
+        $('.budget-header-days-age', $displayElement).text(`${milestone}`);
       }
       $('.budget-header-days-age', $displayElement).attr(
         'title',
-        `${l10n('budget.fi.fiNumber', 'FI Number (Base)')}: ${formatCurrency(financialIndependence)}
+        `${l10n('budget.fi.fiNumber', 'FI Number (Base)')}: ${financialIndependenceOut}
 ${l10n('budget.fi.progress', 'Progress (Base)')}: ${progressTotal}%
 ${l10n('budget.fi.milestoneCurrent', 'Milestone Achieved')}: ${milestone}
-${l10n('budget.fi.fiNumberTarget', 'FI Number (Target)')}: ${formatCurrency(milestoneFI)}
+${l10n('budget.fi.fiNumberTarget', 'FI Number (Target)')}: ${milestoneFIOut}
 ${l10n('budget.fi.progressMilestone', 'Progress (Target)')}: ${progressMilestone}%
 ${l10n('budget.fi.milestoneTarget', 'Target Milestone')}: ${targetMilestone}
 ${l10n('budget.fi.days', 'Total days of budgeting')}: ${totalDays}
-${l10n('budget.fi.workingAssets', 'Working Assets')}: ${formatCurrency(balance)}
-${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${formatCurrency(averageAnnualOutflow)}`
+${l10n('budget.fi.workingAssets', 'Working Assets')}: ${this._formatCurrency(balance)}
+${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurrency(
+          averageAnnualOutflow
+        )}`
       );
+    }
+  }
+
+  _formatCurrencyWithAbbreviation(amount, suffixes) {
+    let _working = amount / 1000;
+
+    if (_working < 1000) {
+      return formatCurrency(amount);
+    } else if (_working < 1000000) {
+      return `${formatCurrency(amount / 1000)} ${suffixes[0]}`;
+    } else if (_working < 1000000000) {
+      return `${formatCurrency(amount / 1000000)} ${suffixes[1]}`;
+    } else if (_working < 1000000000000) {
+      return `${formatCurrency(amount / 1000000000)} ${suffixes[2]}`;
+    } else if (_working < 1000000000000000) {
+      return `${formatCurrency(amount / 1000000000000)} ${suffixes[3]}`;
+    }
+
+    return formatCurrency(amount);
+  }
+
+  _formatCurrency(amount) {
+    switch (this._abbreviation) {
+      case 1:
+        return this._formatCurrencyWithAbbreviation(amount, [
+          l10n('budget.fi.suffixFullThousand', 'thousand'),
+          l10n('budget.fi.suffixFullMillion', 'million'),
+          l10n('budget.fi.suffixFullBillion', 'billion'),
+          l10n('budget.fi.suffixFullTrillion', 'trillion'),
+        ]);
+      case 2:
+        return this._formatCurrencyWithAbbreviation(amount, [
+          l10n('budget.fi.suffixAbbrevThousand', 'thou.'),
+          l10n('budget.fi.suffixAbbrevFullMillion', 'mill.'),
+          l10n('budget.fi.suffixAbbrevBillion', 'bill.'),
+          l10n('budget.fi.suffixAbbrevTrillion', 'trill.'),
+        ]);
+      case 3:
+        return this._formatCurrencyWithAbbreviation(amount, [
+          l10n('budget.fi.suffixSILikeThousand', 'K'),
+          l10n('budget.fi.suffixSILikeFullMillion', 'M'),
+          l10n('budget.fi.suffixSILikeBillion', 'B'),
+          l10n('budget.fi.suffixSILikeTrillion', 'T'),
+        ]);
+      case 4:
+        return this._formatCurrencyWithAbbreviation(amount, [
+          l10n('budget.fi.suffixPureSIThousand', 'K'),
+          l10n('budget.fi.suffixPureSIFullMillion', 'M'),
+          l10n('budget.fi.suffixPureSIBillion', 'G'),
+          l10n('budget.fi.suffixPureSITrillion', 'T'),
+        ]);
+      case 5:
+        return this._formatCurrencyWithAbbreviation(amount, [
+          l10n('budget.fi.suffixRomanNumThousand', 'M'),
+          l10n('budget.fi.suffixRomanNumFullMillion', 'MM'),
+          l10n('budget.fi.suffixRomanNumBillion', 'MMM'),
+          l10n('budget.fi.suffixRomanNumTrillion', 'MMMM'),
+        ]);
+      case 0:
+      default:
+        return formatCurrency(amount);
     }
   }
 

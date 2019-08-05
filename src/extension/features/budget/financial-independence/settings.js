@@ -3,7 +3,7 @@ module.exports = [
     name: 'FinancialIndependence',
     type: 'checkbox',
     default: false,
-    section: 'budget',
+    section: 'fi',
     title: 'Financial Independence Metric',
     description:
       'This calculation shows how much money you need to be financially independent. It can display this as the number you need or how close you are to that number.',
@@ -12,7 +12,7 @@ module.exports = [
     name: 'FinancialIndependenceHistoryLookup',
     type: 'select',
     default: 0,
-    section: 'budget',
+    section: 'fi',
     title: 'Financial Independence History Lookup',
     description: 'How old transactions should be used for this calculation.',
     options: [
@@ -27,7 +27,7 @@ module.exports = [
     name: 'FinancialIndependenceWithdrawalRate',
     type: 'select',
     default: 3,
-    section: 'budget',
+    section: 'fi',
     title: 'Financial Independence Annual Withdrawal Rate',
     description: 'How much you want to withdraw annually.',
     options: [
@@ -47,9 +47,10 @@ module.exports = [
     name: 'FinancialIndependenceMilestone',
     type: 'select',
     default: 4,
-    section: 'budget',
+    section: 'fi',
     title: 'Financial Independence Milestone',
-    description: 'What milestone you are targeting from fi180.com/2017/06/26/the-milestones-of-fi/',
+    description:
+      'What milestone you are targeting from http://fi180.com/2017/06/26/the-milestones-of-fi/',
     options: [
       { name: 'FU$ (10%)', value: '10' },
       { name: 'Lean FI (30%)', value: '30' },
@@ -64,9 +65,30 @@ module.exports = [
     name: 'FinancialIndependenceDisplayValue',
     type: 'select',
     default: 1,
-    section: 'budget',
+    section: 'fi',
     description: 'What number to display.',
     title: 'Financial Independence Display Value',
-    options: [{ name: 'FI Number', value: '0' }, { name: 'FI Progress', value: '1' }],
+    options: [
+      { name: 'FI Number', value: '0' },
+      { name: 'FI Progress', value: '1' },
+      { name: 'FI Status', value: '2' },
+    ],
+  },
+  {
+    name: 'FinancialIndependenceAbbreviation',
+    type: 'select',
+    default: 0,
+    section: 'fi',
+    description:
+      'This affects how your FI Numbers are presented for every power of 1000 (1000, 1000000, etc.)',
+    title: 'Financial Independence Abbreviation',
+    options: [
+      { name: 'None (just puts the number out there formatted normally)', value: '0' },
+      { name: 'Spell Out (thousand, million, billion, trillion)', value: '1' },
+      { name: 'Abbreviated (thou, mill, bill, trill)', value: '2' },
+      { name: 'SI-Like (K, M, B, T)', value: '3' },
+      { name: 'Pure SI (K, M, G, T)', value: '4' },
+      { name: 'Roman Numeral (M, MM, MMM, MMMM)', value: '5' },
+    ],
   },
 ];
