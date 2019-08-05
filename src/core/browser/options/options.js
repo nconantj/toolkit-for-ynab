@@ -169,6 +169,12 @@ jq(() => {
         title: 'Reports Screen Settings',
         showActions: true,
       },
+      {
+        id: 'fiSettingsPage',
+        iconClass: 'fa-balance-scale',
+        title: 'Financial Independence Screen Settings',
+        showActions: true,
+      },
     ];
 
     pages.forEach(page => {
@@ -432,6 +438,10 @@ jq(() => {
     });
     jq('#reportsMenuItem').click(function(e) {
       loadPanel('reports');
+      e.preventDefault();
+    });
+    jq('#fiMenuItem').click(function(e) {
+      loadPanel('fi');
       e.preventDefault();
     });
     jq('#supportMenuItem').click(function(e) {
