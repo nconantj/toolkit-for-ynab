@@ -16,6 +16,18 @@ For FI # & %
 - FI # will be (Sum(expenses) * (12/Count(months))) * 25. An expense is any non-transfer transaction. - DONE.
 - FI % will be displayed with a decimal if less than 100%. It will have 3 significant digits such that under 10% has 2 decimals, and 10% to 99.9% will have 1 decimal. - DONE? I think this is what I implemented, but I can't remember.
 - FI % will be Sum(Assets) / FI #. - DONE
-- FI % will be displayed as either a percent or a number depending on user defined format selection. There is really no difference except formatting. - Percent Implemented, numerical not.
+- FI % will be displayed as either a percent or a number depending on user defined format selection. There is really no difference except formatting. - Percent Implemented, numerical not. - DONE
 - FI number and % will be calculated by using a user defined range similar to the ranges provided for Days of Buffering. - DONE
 - FI number and % will have an override to adjust the target. This will be a multiplier on the the base calculation. i.e. The number is 1.5, FI # * 1.5 is the actual FI # used. - DONE. Caveat: User must choose from predefined milestones.
+
+
+TODO:
+- Add reports.
+
+- Calculate to end of previous month.
+
+- Make above optional. If we calculate to-date, then months are 30 days, otherwise they are true length.
+
+- Add option to calculate based on visible month (Budget screen only)
+
+- Calculate based on the visible month. If End of Previous month is selected, this will be the end of the month before the visible month.

@@ -76,6 +76,18 @@ module.exports = [
     ],
   },
   {
+    name: 'FinancialIndependenceProgressFormat',
+    type: 'select',
+    default: 0,
+    section: 'fi',
+    description: 'Determines how to display FI progress.',
+    title: 'Financial Independence Progress Format',
+    options: [
+      { name: 'Show as Percent (10%, 100%, 150%)', value: '0' },
+      { name: 'Show as Multiplier (0.1 FI, 1 FI 1.5 FI)', value: '1' },
+    ],
+  },
+  {
     name: 'FinancialIndependenceTimeDisplay',
     type: 'select',
     default: 0,

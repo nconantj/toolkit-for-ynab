@@ -22,6 +22,8 @@ export class FinancialIndependence extends Feature {
 
   _timeFormat = parseInt(ynabToolKit.options.FinancialIndependenceTimeDisplay);
 
+  _progressFormat = parseInt(ynabToolKit.options.FinancialIndependenceProgressFormat);
+
   injectCSS() {
     return require('./index.css');
   }
@@ -111,18 +113,24 @@ export class FinancialIndependence extends Feature {
       );
     } else {
       const milestoneFI = financialIndependence * this._milestone;
-      const progressMilestone = Math.floor((balance / milestoneFI) * 10000) / 100;
-      const progressTotal = Math.floor((balance / financialIndependence) * 10000) / 100;
+      const progressMilestone =
+        Math.floor((balance / milestoneFI) * (this._progressFormat === 0 ? 10000 : 100)) / 100;
+      const progressTotal =
+        Math.floor((balance / financialIndependence) * (this._progressFormat === 0 ? 10000 : 100)) /
+        100;
       const milestone = this._getMilestone(progressTotal);
       const targetMilestone = this._getMilestone(this._milestone * 100);
       const milestoneFIOut = this._formatCurrency(milestoneFI);
       const financialIndependenceOut = this._formatCurrency(financialIndependence);
       const fiTimeTotal = this._getFIPeriod(balance, financialIndependence);
       const fiTimeTarget = this._getFIPeriod(balance, milestoneFI);
+      const progressSuffix = this._progressFormat === 0 ? '%' : ' FI';
 
       switch (this._display) {
         case 1:
-          $('.budget-header-days-age', $displayElement).text(`${progressMilestone}%`);
+          $('.budget-header-days-age', $displayElement).text(
+            `${progressMilestone}${progressSuffix}`
+          );
           break;
         case 2:
           $('.budget-header-days-age', $displayElement).text(`${milestone}`);
@@ -149,11 +157,11 @@ export class FinancialIndependence extends Feature {
       $('.budget-header-days-age', $displayElement).attr(
         'title',
         `${l10n('budget.fi.fiNumber', 'FI Number (Base)')}: ${financialIndependenceOut}
-${l10n('budget.fi.progress', 'Progress (Base)')}: ${progressTotal}%
+${l10n('budget.fi.progress', 'Progress (Base)')}: ${progressTotal}${progressSuffix}
 ${timeToBase}: ${fiTimeTotal}
 ${l10n('budget.fi.milestoneCurrent', 'Milestone Achieved')}: ${milestone}
 ${l10n('budget.fi.fiNumberTarget', 'FI Number (Target)')}: ${milestoneFIOut}
-${l10n('budget.fi.progressMilestone', 'Progress (Target)')}: ${progressMilestone}%
+${l10n('budget.fi.progressMilestone', 'Progress (Target)')}: ${progressMilestone}${progressSuffix}
 ${timeToTarget}: ${fiTimeTarget}
 ${l10n('budget.fi.milestoneTarget', 'Target Milestone')}: ${targetMilestone}
 ${l10n('budget.fi.days', 'Total days of budgeting')}: ${totalDays}
