@@ -6,10 +6,10 @@ Basically, one could stop working forever if they reach their FI number.
 
 The goals of this feature (in no particular order):
 
-- Provide a new left tab for FI exploration. Page one will show all the numbers available to display and graphs of these numbers over time on a monthly basis.
+- Provide a new left tab for FI exploration. Page one will show all the numbers available to display and graphs of these numbers over time on a monthly basis. - Since this idea is really just a report or two, we'll just create two reports: one forward-looking, and one backward looking.
 - Provide an FI number and/or FI %, at user discretion, on the budget screen. - DONE
-- Provide Days to FI, and/or FI date, at user discretion, on the budget screen. This is a bit more complex and needs some additional settings.
-- Provide a means to exclude, include, or otherwise override the default rules. Ideally this would be a new configuration section in the settings for this addon to allow selection of what categories to include.
+- Provide Days to FI, and/or FI date, at user discretion, on the budget screen. This is a bit more complex and needs some additional settings. - DONE
+- Provide a means to exclude, include, or otherwise override the default rules. Ideally this would be a new configuration section in the settings for this addon to allow selection of what categories to include. - Exclude accounts is implemented with a ':fiexclude:' tag in the account notes.
 
 For FI # & %
 - FI # will be displayed with up to 4 digits plus a decimal point and text describing the magnitude (thousand, million, billion, etc). The magnitude will be configurable to use "full name," SI-Like Notation (K, M, B, T), SI-Pure (not common) (K, M, G, T), or "M" notation (M, MM, MMM, MMMM). Note: "M" notation is roman numerals, anything over a quadrillion will be converted to "Mx#" where # is in arabic numerals). - DONE. Caveat: >=quadrillion returns unmodified.
