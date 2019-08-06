@@ -22,6 +22,16 @@ For FI # & %
 
 
 TODO:
+- Filter out, at a minimum, non-transfer transactions on accounts not included in assets via the ":fiexclude:" tag.
+
+- Check transaction memo for ':fiexclude:' tag and filter those out. Useful for reconciliation adjustments from market fluctuations (unrealized losses). Note: Income and unrealized gains are automatically ignored due to the limitation to outflows only.
+
+- Allow categories to be excluded using the ':fiexclude:' tag. Not needed for categories that only outflow to tracking accounts. We automatically exclude those transactions.
+
+- Add ':fiinclude:' tag for use on categories where the budgeted amount is to be considered a contribution towards the financial independence nest egg.
+
+- Add some default master categories to examine for includsion in the FI nest egg.
+
 - Add reports.
 
 - Calculate to end of previous month.
