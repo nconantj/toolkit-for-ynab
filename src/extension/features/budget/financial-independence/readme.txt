@@ -22,7 +22,7 @@ For FI # & %
 
 
 TODO:
-- Filter out, at a minimum, non-transfer transactions on accounts not included in assets via the ":fiexclude:" tag.
+- Filter out, at a minimum, non-transfer transactions on accounts not included in assets via the ":fiexclude:" tag. Note, this is not necessary for excluded tracking accounts, as their transactions are automatically excluded.
 
 - Check transaction memo for ':fiexclude:' tag and filter those out. Useful for reconciliation adjustments from market fluctuations (unrealized losses). Note: Income and unrealized gains are automatically ignored due to the limitation to outflows only.
 
@@ -34,10 +34,14 @@ TODO:
 
 - Add reports.
 
-- Calculate to end of previous month.
+- Calculate to end of previous month. - DONE.
 
-- Make above optional. If we calculate to-date, then months are 30 days, otherwise they are true length.
+- Make above optional. If we calculate to-date, then months are 30 days, otherwise they are true length. - Not doing 30 day months. "To-Date" is the end of this month.
 
-- Add option to calculate based on visible month (Budget screen only)
+- Add option to calculate based on visible month (Budget screen only) - DONE
 
-- Calculate based on the visible month. If End of Previous month is selected, this will be the end of the month before the visible month.
+- Calculate based on the visible month. If End of Previous month is selected, this will be the end of the month before the visible month. - DONE
+
+- Fix dynamic calculations to respect the budget month displayed for calculating assets.
+
+- Add option to include liabilities in asset calculation by default. That is, a method to include liability balances besides adding a ":fiinclude:" tag to the note.
