@@ -13,8 +13,6 @@ export class FinancialIndependence extends Feature {
 
   _lookbackLatest = parseInt(ynabToolKit.options.FinancialIndependenceEndDate);
 
-  _ignoreTracking = parseInt(ynabToolKit.options.FinancialIndependenceIgnoreTracking);
-
   // It may seem counterintuitive, but by setting the min date higher than the max, we can check that everything is working right.
   _minDate = new Date();
   _maxDate = new Date(0);
@@ -30,8 +28,6 @@ export class FinancialIndependence extends Feature {
   _timeFormat = parseInt(ynabToolKit.options.FinancialIndependenceTimeDisplay);
 
   _progressFormat = parseInt(ynabToolKit.options.FinancialIndependenceProgressFormat);
-
-  _trackingAccounts = [];
 
   injectCSS() {
     return require('./index.css');

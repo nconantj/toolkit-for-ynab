@@ -31,16 +31,6 @@ module.exports = [
     ],
   },
   {
-    name: 'FinancialIndependenceIgnoreTracking',
-    type: 'select',
-    default: 0,
-    section: 'fi',
-    title: 'Ignore outflows in tracking accounts?',
-    description:
-      'When enabled, this will ignore all outflows from tracking accounts. If all your non-transfer outflows are market adjustments, then you should turn this on so negative adjustments are ignored.',
-    options: [{ name: 'Disabled', value: '0' }, { name: 'Enabled', value: '1' }],
-  },
-  {
     name: 'FinancialIndependenceHistoryLookup',
     type: 'select',
     default: 0,
