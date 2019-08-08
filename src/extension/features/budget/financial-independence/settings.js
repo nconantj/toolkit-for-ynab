@@ -9,6 +9,38 @@ module.exports = [
       'This calculation shows how much money you need to be financially independent. It can display this as the number you need or how close you are to that number.',
   },
   {
+    name: 'FinancialIndependenceEndDate',
+    type: 'select',
+    default: 0,
+    section: 'fi',
+    title: 'How do you want your number calculated?',
+    description:
+      'Determines whether the data is representative of the displayed budget month or the overall budget.',
+    options: [
+      { name: 'Static - End of Month (overall to-date)', value: '0' },
+      { name: 'Static - Start of Month (overall ending on the last day of last mont)', value: '1' },
+      {
+        name: 'Dynamic - End of Month (to the end of the current budget month displayed)',
+        value: '2',
+      },
+      {
+        name:
+          'Dynamic - Start of Month (to the end of the budget month before the current budget month displayed)',
+        value: '3',
+      },
+    ],
+  },
+  {
+    name: 'FinancialIndependenceIgnoreTracking',
+    type: 'select',
+    default: 0,
+    section: 'fi',
+    title: 'Ignore outflows in tracking accounts?',
+    description:
+      'When enabled, this will ignore all outflows from tracking accounts. If all your non-transfer outflows are market adjustments, then you should turn this on so negative adjustments are ignored.',
+    options: [{ name: 'Disabled', value: '0' }, { name: 'Enabled', value: '1' }],
+  },
+  {
     name: 'FinancialIndependenceHistoryLookup',
     type: 'select',
     default: 0,
