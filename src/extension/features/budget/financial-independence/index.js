@@ -10,8 +10,6 @@ import { Collections } from 'toolkit/extension/utils/collections';
 
 export class FinancialIndependence extends Feature {
   _lookbackMonths = parseInt(ynabToolKit.options.FinancialIndependenceHistoryLookup);
-  // We want to change how this works by finding the actual number of days for the past n months ending on the last day of the previouse month. This calculation will not take the current month's transactions into account.
-  _lookbackDays = this._lookbackMonths * 30;
 
   _lookbackLatest = parseInt(ynabToolKit.options.FinancialIndependenceEndDate);
 
@@ -412,11 +410,9 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
 
     let isEligibleDate = false;
 
-    if (this._lookbackDays === 0) {
-      isEligibleDate = true;
-    } else {
-      isEligibleDate = transaction.get('date').daysApart(today) < this._lookbackDays;
-    }
+    let transDate = transaction.get('date');
+
+    isEligibleDate = this._minDate <= transDate && transDate <= this._maxDate;
 
     return (
       isEligibleDate &&
