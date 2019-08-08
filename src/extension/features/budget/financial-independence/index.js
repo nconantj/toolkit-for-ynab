@@ -38,32 +38,40 @@ export class FinancialIndependence extends Feature {
   }
 
   invoke() {
+    let endMonth = new Date();
+
     switch (this._lookbackLatest) {
       case 0:
-        endMonth = new Date();
         this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0);
-        this._minDate = new Date(endMonth.getFullYear(), endMonth.getMonth() - _lookcbackMonths, 0);
+        this._minDate = new Date(
+          endMonth.getFullYear(),
+          endMonth.getMonth() - this._lookbackMonths,
+          0
+        );
         break;
       case 1:
-        endMonth = new Date();
         this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth(), 0);
         this._minDate = new Date(
           endMonth.getFullYear(),
-          endMonth.getMonth() - _lookcbackMonths - 1,
+          endMonth.getMonth() - this._lookbackMonths - 1,
           0
         );
         break;
       case 2:
         endMonth = getSelectedMonth().format('YYYY-MM');
         this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0);
-        this._minDate = new Date(endMonth.getFullYear(), endMonth.getMonth() - _lookcbackMonths, 0);
+        this._minDate = new Date(
+          endMonth.getFullYear(),
+          endMonth.getMonth() - this._lookbackMonths,
+          0
+        );
         break;
       case 3:
         endMonth = getSelectedMonth().format('YYYY-MM');
         this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth(), 0);
         this._minDate = new Date(
           endMonth.getFullYear(),
-          endMonth.getMonth() - _lookcbackMonths - 1,
+          endMonth.getMonth() - this._lookbackMonths - 1,
           0
         );
         break;
@@ -371,18 +379,9 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
     const maxDate = moment.max(dates);
     const availableDates = maxDate.diff(minDate, 'days');
 
-    let averageDailyOutflow;
-    let averageMonthlyOutflow;
     let averageAnnualOutflow;
 
-    if (this._lookbackDays !== 0) {
-      averageDailyOutflow = Math.abs(totalOutflow / this._lookbackDays);
-    } else {
-      averageDailyOutflow = Math.abs(totalOutflow / availableDates);
-    }
-
-    averageMonthlyOutflow = averageDailyOutflow * 30; // To be removed.
-    averageAnnualOutflow = averageMonthlyOutflow * 12; // To be changed to daily * 365.25
+    averageAnnualOutflow = Math.abs(totalOutflow / availableDates) * 365.25;
 
     let financialIndependence = averageAnnualOutflow / this._withdrawalRate;
 
@@ -392,7 +391,6 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
     }
 
     return {
-      averageDailyOutflow,
       averageAnnualOutflow,
       financialIndependence,
       notEnoughDates,
@@ -402,8 +400,6 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
   };
 
   _eligibleTransactionFilter = transaction => {
-    const today = new ynab.utilities.DateWithoutTime();
-
     let isEligibleDate = false;
 
     let transDate = transaction.get('date');
