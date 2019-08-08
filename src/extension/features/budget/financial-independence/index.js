@@ -10,6 +10,14 @@ export class FinancialIndependence extends Feature {
   // We want to change how this works by finding the actual number of days for the past n months ending on the last day of the previouse month. This calculation will not take the current month's transactions into account.
   _lookbackDays = this._lookbackMonths * 30;
 
+  _lookbackLatest = parseInt(ynabToolKit.options.FinancialIndependenceEndDate);
+
+  _ignoreTracking = parseInt(ynabToolKit.options.FinancialIndependenceIgnoreTracking);
+
+  // It may seem counterintuitive, but by setting the min date higher than the max, we can check that everything is working right.
+  _minDate = new Date();
+  _maxDate = new Date(0);
+
   _withdrawalRate = parseInt(ynabToolKit.options.FinancialIndependenceWithdrawalRate) / 100;
   _milestone = parseInt(ynabToolKit.options.FinancialIndependenceMilestone) / 100;
   _display = parseInt(ynabToolKit.options.FinancialIndependenceDisplayValue);
@@ -17,8 +25,6 @@ export class FinancialIndependence extends Feature {
   _abbreviation = parseInt(ynabToolKit.options.FinancialIndependenceAbbreviation);
 
   _growthRate = parseInt(ynabToolKit.options.FinancialIndependenceGrowthRate) / 100;
-
-  _keysPrinted = false;
 
   _timeFormat = parseInt(ynabToolKit.options.FinancialIndependenceTimeDisplay);
 
@@ -33,6 +39,23 @@ export class FinancialIndependence extends Feature {
   }
 
   invoke() {
+    switch (this._lookbackLatest) {
+      case 0:
+        _maxDate = new Date(_minDate.getFullYear(), _minDate.getMonth() + 1, 0);
+        _minDate = new Date(_minDate.getFullYear(), _minDate.getMonth() - _lookcbackMonths, 1);
+        break;
+      case 1:
+        _maxDate = new Date(_minDate.getFullYear(), _minDate.getMonth(), 0);
+        _minDate = new Date(_minDate.getFullYear(), _minDate.getMonth() - _lookcbackMonths - 1, 1);
+        break;
+      case 2:
+        console.log('2');
+        break;
+      case 3:
+        console.log('3');
+        break;
+    }
+
     const eligibleTransactions = getEntityManager()
       .getAllTransactions()
       .filter(this._eligibleTransactionFilter);
