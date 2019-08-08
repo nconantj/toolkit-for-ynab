@@ -1,7 +1,10 @@
 import { l10n } from 'toolkit/extension/utils/toolkit';
-import { getEntityManager } from 'toolkit/extension/utils/ynab';
+import {
+  getEntityManager,
+  isCurrentRouteBudgetPage,
+  getSelectedMonth,
+} from 'toolkit/extension/utils/ynab';
 import { Feature } from 'toolkit/extension/features/feature';
-import { isCurrentRouteBudgetPage } from 'toolkit/extension/utils/ynab';
 import { formatCurrency } from 'toolkit/extension/utils/currency';
 import { Collections } from 'toolkit/extension/utils/collections';
 
@@ -30,6 +33,8 @@ export class FinancialIndependence extends Feature {
 
   _progressFormat = parseInt(ynabToolKit.options.FinancialIndependenceProgressFormat);
 
+  _trackingAccounts = [];
+
   injectCSS() {
     return require('./index.css');
   }
@@ -41,19 +46,37 @@ export class FinancialIndependence extends Feature {
   invoke() {
     switch (this._lookbackLatest) {
       case 0:
-        _maxDate = new Date(_minDate.getFullYear(), _minDate.getMonth() + 1, 0);
-        _minDate = new Date(_minDate.getFullYear(), _minDate.getMonth() - _lookcbackMonths, 1);
+        endMonth = new Date();
+        this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0);
+        this._minDate = new Date(endMonth.getFullYear(), endMonth.getMonth() - _lookcbackMonths, 0);
         break;
       case 1:
-        _maxDate = new Date(_minDate.getFullYear(), _minDate.getMonth(), 0);
-        _minDate = new Date(_minDate.getFullYear(), _minDate.getMonth() - _lookcbackMonths - 1, 1);
+        endMonth = new Date();
+        this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth(), 0);
+        this._minDate = new Date(
+          endMonth.getFullYear(),
+          endMonth.getMonth() - _lookcbackMonths - 1,
+          0
+        );
         break;
       case 2:
-        console.log('2');
+        endMonth = getSelectedMonth().format('YYYY-MM');
+        this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0);
+        this._minDate = new Date(endMonth.getFullYear(), endMonth.getMonth() - _lookcbackMonths, 0);
         break;
       case 3:
-        console.log('3');
+        endMonth = getSelectedMonth().format('YYYY-MM');
+        this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth(), 0);
+        this._minDate = new Date(
+          endMonth.getFullYear(),
+          endMonth.getMonth() - _lookcbackMonths - 1,
+          0
+        );
         break;
+    }
+
+    if (this._lookbackMonths === 0) {
+      this._minDate = new Date(0);
     }
 
     const eligibleTransactions = getEntityManager()
