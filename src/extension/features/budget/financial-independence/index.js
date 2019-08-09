@@ -6,7 +6,6 @@ import {
 } from 'toolkit/extension/utils/ynab';
 import { Feature } from 'toolkit/extension/features/feature';
 import { formatCurrency } from 'toolkit/extension/utils/currency';
-import { Collections } from 'toolkit/extension/utils/collections';
 
 export class FinancialIndependence extends Feature {
   _lookbackMonths = parseInt(ynabToolKit.options.FinancialIndependenceHistoryLookup);
@@ -58,7 +57,8 @@ export class FinancialIndependence extends Feature {
         );
         break;
       case 2:
-        endMonth = getSelectedMonth().format('YYYY-MM');
+        endMonth = new Date(getSelectedMonth().toISOString());
+        endMonth = new Date(endMonth.getTime() + endMonth.getTimezoneOffset() * 60000);
         this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0);
         this._minDate = new Date(
           endMonth.getFullYear(),
@@ -67,7 +67,8 @@ export class FinancialIndependence extends Feature {
         );
         break;
       case 3:
-        endMonth = getSelectedMonth().format('YYYY-MM');
+        endMonth = new Date(getSelectedMonth().toISOString());
+        endMonth = new Date(endMonth.getTime() + endMonth.getTimezoneOffset() * 60000);
         this._maxDate = new Date(endMonth.getFullYear(), endMonth.getMonth(), 0);
         this._minDate = new Date(
           endMonth.getFullYear(),
@@ -85,30 +86,11 @@ export class FinancialIndependence extends Feature {
       .getAllTransactions()
       .filter(this._eligibleTransactionFilter);
 
-    const accounts = Collections.accountsCollection;
+    const balanceTransactions = getEntityManager()
+      .getAllTransactions()
+      .filter(this._balanceTransactionFilter);
 
-    let balance = 0;
-    if (accounts) {
-      balance = accounts.reduce((reduced, current) => {
-        const note = current.getNote();
-        const calculation = current.getAccountCalculation();
-        const acctType = current.getAccountType();
-        if (
-          calculation &&
-          !calculation.getAccountIsTombstone() &&
-          (acctType === 'OtherAsset' || acctType === 'Savings' || acctType === 'Checking') &&
-          (note == null || note.indexOf(':fiexcluded:') === -1)
-        ) {
-          let calcBalance = calculation.getBalance();
-          if (calcBalance > 0) {
-            reduced += calcBalance;
-          }
-        }
-
-        return reduced;
-      }, 0);
-    }
-
+    const balance = this._calculateAssetBalance(balanceTransactions);
     const calculation = this._calculateFINumber(eligibleTransactions);
     this._updateDisplay(calculation, balance);
   }
@@ -363,6 +345,16 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
     return l10n('budget.fi.milestoneSuperFI', '1.5 FI or better');
   };
 
+  _calculateAssetBalance = transactions => {
+    const balance = transactions.reduce((reduced, current) => {
+      const amount = current.get('amount');
+      reduced += amount;
+      return reduced;
+    }, 0);
+
+    return balance;
+  };
+
   _calculateFINumber = transactions => {
     const { dates, totalOutflow, uniqueDates } = transactions.reduce(
       (reduced, current) => {
@@ -397,6 +389,28 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
       totalDays: uniqueDates.size,
       totalOutflow,
     };
+  };
+
+  _balanceTransactionFilter = transaction => {
+    let isEligibleDate = false;
+    let isEligibleType = false;
+    let isExcluded = true; // We check for falseness.
+
+    let transDate = transaction.get('date');
+
+    isEligibleDate = transDate <= this._maxDate;
+    let acctType = transaction.get('account.accountType');
+
+    if (acctType === 'OtherAsset' || acctType === 'Savings' || acctType === 'Checking') {
+      isEligibleType = true;
+    }
+
+    let acctNote = transaction.get('account.note');
+    if (acctNote == null || acctNote.indexOf(':fiexcluded:') === -1) {
+      isExcluded = false;
+    }
+
+    return isEligibleDate && isEligibleType && !isExcluded && !transaction.get('isTombstone');
   };
 
   _eligibleTransactionFilter = transaction => {
