@@ -42,6 +42,6 @@ TODO:
 
 - Calculate based on the visible month. If End of Previous month is selected, this will be the end of the month before the visible month. - DONE
 
-- Fix dynamic calculations to respect the budget month displayed for calculating assets.
+- Fix dynamic calculations to respect the budget month displayed for calculating assets. - DONE
 
 - Add option to include liabilities in asset calculation by default. That is, a method to include liability balances besides adding a ":fiinclude:" tag to the note.
