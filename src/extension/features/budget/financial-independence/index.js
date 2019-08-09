@@ -84,7 +84,7 @@ export class FinancialIndependence extends Feature {
 
     const eligibleTransactions = getEntityManager()
       .getAllTransactions()
-      .filter(this._eligibleTransactionFilter);
+      .filter(this._expenseTransactionFilter);
 
     const balanceTransactions = getEntityManager()
       .getAllTransactions()
@@ -391,10 +391,12 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
     };
   };
 
+  // Determines what transactions to use when calculating working assets.
   _balanceTransactionFilter = transaction => {
     let isEligibleDate = false;
     let isEligibleType = false;
     let isExcluded = true; // We check for falseness.
+    let isIncluded = false;
 
     let transDate = transaction.get('date');
 
@@ -408,25 +410,50 @@ ${l10n('budget.fi.avgOutflow', 'Average annual outflow')}: ~${this._formatCurren
     let acctNote = transaction.get('account.note');
     if (acctNote == null || acctNote.indexOf(':fiexcluded:') === -1) {
       isExcluded = false;
+    } else if (acctNote != null && acctNote.indexOf(':fiincluded:' !== -1)) {
+      isIncluded = true;
     }
-
-    return isEligibleDate && isEligibleType && !isExcluded && !transaction.get('isTombstone');
+    
+    return !transaction.get('isTombstone') && (isIncluded || (isEligibleDate && isEligibleType && !isExcluded));
   };
 
-  _eligibleTransactionFilter = transaction => {
+  // Determines what transactions to use when calculating expenses.
+  _expenseTransactionFilter = transaction => {
     let isEligibleDate = false;
+    let isExcluded = true; // We check for falseness.
+    let isIncluded = false;
 
     let transDate = transaction.get('date');
 
     isEligibleDate = this._minDate <= transDate && transDate <= this._maxDate;
 
+    let acctNote = transaction.get('account.note');
+    if (acctNote == null || acctNote.indexOf(':fiexcluded:') === -1) { // Not pertinent for tracking accounts, BUT it is pertinent for budget accounts that are ignored, i.e. gift card spending.
+      isExcluded = false;
+    } else if (acctNote != null && acctNote.indexOf(':fiincluded:' !== -1)) {
+      isIncluded = true;
+    }
+    
+    let transMemo = transaction.get('memo');
+    if (transMemo == null || transMemo.indexOf(':fiexcluded:') === -1) {
+      isExcluded = false;
+    } else if (transMemo != null && transMemo.indexOf(':fiincluded:' !== -1)) {
+      isIncluded = true;
+    }
+    
+    // Still need to check for category inclusion.
+
     return (
-      isEligibleDate &&
-      !transaction.get('isTombstone') &&
-      !transaction.get('payee.isInternal') &&
-      !transaction.isTransferTransaction() &&
-      transaction.get('account.onBudget') &&
-      transaction.get('amount') < 0
+      !transaction.get('isTombstone') && (
+        isIncluded || (
+          !isExcluded &&
+          isEligibleDate &&
+          !transaction.get('payee.isInternal') &&
+          !transaction.isTransferTransaction() &&
+          transaction.get('account.onBudget') &&
+          transaction.get('amount') < 0
+        )
+      )
     );
   };
 }
